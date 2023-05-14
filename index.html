@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Memory Game</title>
+  <link rel="stylesheet" type="text/css" href="main.css">
+</head>
+<body>
+  <h1>Memory Game</h1>
+  <div id="gameBoard"></div>
+  <p id="timer"></p>
+  <div id="leaderboard"></div>
+
+  <script>
+    var cards = [
+      'img/1.png',
+      'img/1.png',
+      'img/2.png',
+      'img/2.png',
+      'img/3.png',
+      'img/3.png',
+      'img/4.png',
+      'img/4.png',
+      'img/5.png',
+      'img/5.png',
+      'img/6.png',
+      'img/6.png',
+      'img/7.png',
+      'img/7.png',
+      'img/8.png',
+      'img/8.png',
+      'img/9.png',
+      'img/9.png',
+    ];
+
+    var gameBoard = document.getElementById('gameBoard');
+    var flippedCards = [];
+    var matchedCards = [];
+
+    var timerElement = document.getElementById('timer');
+    var seconds = 0;
+    var timerInterval;
+
+    var leaderboard = JSON.parse(localStorage.getItem('leaderboard')) || [];
+
+    cards.sort(() => Math.random() - 0.5);
+
+    for (var i = 0; i < cards.length; i++) {
+      var card = document.createElement('div');
+      card.className = 'card';
+      card.dataset.value = cards[i];
+      gameBoard.appendChild(card);
+      card.addEventListener('click', flipCard);
+    }
+
+    function flipCard() {
+      if (flippedCards.length < 2 && !matchedCards.includes(this)) {
+        this.style.backgroundImage = `url(${this.dataset.value})`;
+        this.classList.add('hidden');
+        flippedCards.push(this);
+
+        if (flippedCards.length === 2) {
+          setTimeout(checkForMatch, 1000);
+        }
+      }
+    }
+
+    function checkForMatch() {
+      var card1 = flippedCards[0];
+      var card2 = flippedCards[1];
+
+      if (card1.dataset.value === card2.dataset.value) {
+        matchedCards.push(card1, card2);
+        card1.removeEventListener('click', flipCard);
+        card2.removeEventListener('click', flipCard);
+      } else {
+        card1.style.backgroundImage = '';
+        card1.classList.remove('hidden');
+        card2.style.backgroundImage = '';
+        card2.classList.remove('hidden');
+      }
+
+      flippedCards = [];
+
+      if (matchedCards.length === cards.length) {
+        clearInterval(timerInterval);
+        var record = getRecord();
+        if (seconds < record || record === 0) {
+          setRecord(seconds);
+          alert('Congratulations! You have a new record!');
+        } else {
+          alert('Congratulations! You have won the game!');
+        }
+        restartGame();
+      }
+    }
+
+    function restartGame() {
+      gameBoard.innerHTML = '';
+      flippedCards = [];
+      matchedCards = [];
+      seconds = 0;
+      timerElement.textContent = '0s';
+
+      cards.sort(() => Math.random() - 0.5);
+
+      for (var i = 0; i < cards.length; i++) {
+        var card = document.createElement('div');
+        card.className = 'card';
+        card.dataset.value = cards[i];
+        gameBoard.appendChild(card);
+        card.addEventListener('click', flipCard);
+      }
+
+      clearInterval(timerInterval);
+      timerInterval = setInterval(updateTimer, 1000);
+    }
+
+    function updateTimer() {
+      seconds++;
+      timerElement.textContent = `${seconds}s`;
+    }
+
+    function getRecord() {
+      return leaderboard.length > 0 ? leaderboard[0].time : 0;
+    }
+
+    function setRecord(time) {
+      var playerName = prompt('Congratulations! Enter your name:');
+      var newRecord = {
+        name: playerName,
+        time: time
+      };
+      leaderboard.unshift(newRecord);
+      leaderboard = leaderboard.slice(0, 5); // Keep only the top 5 records
+      localStorage.setItem('leaderboard', JSON.stringify(leaderboard));
+      displayLeaderboard();
+    }
+
+    function displayLeaderboard() {
+      var leaderboardElement = document.getElementById('leaderboard');
+      leaderboardElement.innerHTML = '';
+      var leaderboardTitle = document.createElement('h2');
+      leaderboardTitle.textContent = 'Leaderboard';
+      leaderboardElement.appendChild(leaderboardTitle);
+
+      if (leaderboard.length > 0) {
+        var leaderboardList = document.createElement('ol');
+        leaderboard.forEach(function(record) {
+          var listItem = document.createElement('li');
+          listItem.textContent = `${record.name}: ${record.time}s`;
+          leaderboardList.appendChild(listItem);
+        });
+        leaderboardElement.appendChild(leaderboardList);
+      } else {
+        var noRecordMessage = document.createElement('p');
+        noRecordMessage.textContent = 'No records yet.';
+        leaderboardElement.appendChild(noRecordMessage);
+      }
+    }
+
+    displayLeaderboard();
+    restartGame();
+  </script>
+</body>
+</html>
+
+

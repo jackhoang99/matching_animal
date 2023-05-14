@@ -1,0 +1,119 @@
+body {
+  font-family: 'Comic Sans MS', cursive, sans-serif;
+  background-color: #f1f1f1;
+  text-align: center;
+  margin: 0;
+  padding: 20px;
+}
+
+
+h1 {
+  font-family: 'Comic Sans MS', cursive;
+  color: #333;
+  font-size: 36px;
+  margin-top: 10px;
+  text-shadow: 2px 2px 4px #FFA500;
+}
+
+
+
+#gameBoard {
+  margin: 20px auto;
+  max-width: 600px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+}
+
+.card {
+  width: 100px;
+  height: 100px;
+  background-color: #FBE6C7;
+  margin: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 24px;
+  cursor: pointer;
+  border-radius: 50%;
+  transition: background-color 0.3s ease;
+  background-position: center;
+  background-size: cover;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+.card:hover {
+  background-color: #FFDAB9;
+  transform: scale(1.05);
+}
+
+.hidden {
+  background-image: none;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  top: -10px;
+  left: -10px;
+  right: -10px;
+  bottom: -10px;
+  border: 10px solid rgba(255, 69, 0, 0.3);
+  border-radius: 50%;
+  opacity: 0.5;
+  z-index: -1;
+}
+
+.card::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 70%;
+  height: 70%;
+  background-repeat: no-repeat;
+  background-size: cover;
+  opacity: 0.8;
+  pointer-events: none;
+}
+
+.star {
+  position: absolute;
+  top: -15px;
+  left: -15px;
+  width: 30px;
+  height: 30px;
+  background-image: url('img/star.png');
+  background-repeat: no-repeat;
+  background-size: cover;
+  animation: rotateStar 2s linear infinite;
+}
+
+.sun {
+  position: absolute;
+  top: -30px;
+  left: -30px;
+  width: 60px;
+  height: 60px;
+  background-image: url('img/sun.png');
+  background-repeat: no-repeat;
+  background-size: cover;
+  animation: rotateStar 3s linear infinite;
+}
+
+@keyframes rotateStar {
+  0% { transform: rotate(0); }
+  100% { transform: rotate(360deg); }
+}
+
+@media (max-width: 600px) {
+  .card {
+    width: 80px;
+    height: 80px;
+    font-size: 20px;
+  }
+}
